@@ -1,5 +1,3 @@
-# --- START OF FINAL, ROBUST bot.py FILE ---
-
 import discord
 from discord.ext import commands
 import os
@@ -23,24 +21,42 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 KNOWLEDGE_BASE = ""
 
-# --- KNOWLEDGE BASE FUNCTION (No changes needed) ---
+# --- KNOWLEDGE BASE FUNCTION (REWRITTEN FOR RECURSIVE SEARCH) ---
 def load_knowledge_base():
+    """
+    Recursively scans specified directories for .txt files and loads them
+    into a single string for the RAG context.
+    """
     knowledge_base_content = ""
-    search_directories = [".", "data", "essays"]
+    # Directories to search. It will search these and all their subdirectories.
+    search_directories = [".", "data", "essays"] 
+    
     print("Loading knowledge base from .txt files...")
+    
     for directory in search_directories:
+        # Check if the base directory exists
         if not os.path.isdir(directory):
             print(f"Info: Directory '{directory}' not found, skipping.")
             continue
-        print(f"--> Scanning directory: '{directory}'")
-        for filename in os.listdir(directory):
-            if filename.endswith(".txt"):
-                file_path = os.path.join(directory, filename)
-                try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        knowledge_base_content += f.read() + "\n\n"
-                except Exception as e:
-                    print(f"    - Error reading {filename}: {e}")
+        
+        print(f"--> Recursively scanning directory: '{directory}'")
+        
+        # os.walk() is the key. It goes through the directory and all subdirectories.
+        for root, dirs, files in os.walk(directory):
+            for filename in files:
+                if filename.endswith(".txt"):
+                    file_path = os.path.join(root, filename)
+                    # We print the full path to confirm it's finding nested files.
+                    print(f"    - Loading file: {file_path}") 
+                    try:
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            # Added filename as metadata into the text itself for better context
+                            knowledge_base_content += f"--- START OF FILE {os.path.basename(file_path)} ---\n"
+                            knowledge_base_content += f.read()
+                            knowledge_base_content += f"\n--- END OF FILE {os.path.basename(file_path)} ---\n\n"
+                    except Exception as e:
+                        print(f"    - Error reading {file_path}: {e}")
+                        
     if not knowledge_base_content:
         print("Warning: No .txt files found. The bot will have no custom knowledge.")
     return knowledge_base_content
@@ -60,9 +76,7 @@ def find_relevant_context(question, knowledge_base, max_tokens=300000):
         return "No specific context found for your question in the knowledge base."
     return context
 
-# --- START OF REPLACED SECTION ---
-# This function has been upgraded with timeouts and better error handling.
-
+# --- AI RESPONSE FUNCTION (No changes needed) ---
 async def get_ai_response(question, knowledge_context):
     """
     Handles the entire AI response generation process, including retrieval,
@@ -80,38 +94,29 @@ async def get_ai_response(question, knowledge_context):
         f"QUESTION: {question}"
     )
 
-    # This is the "blocking" part of the code that needs to run in a separate thread.
     def make_api_call():
         """Makes the actual API call to Google Gemini."""
-        model = genai.GenerativeModel('models/gemini-1.5-pro') # Corrected model name
+        model = genai.GenerativeModel('models/gemini-1.5-pro')
         
-        # This is where we add the crucial timeout!
         response = model.generate_content(
             full_prompt,
-            request_options={"timeout": 60}  # Timeout after 60 seconds
+            request_options={"timeout": 60}
         )
         return response
 
     try:
-        # Run the blocking API call in an executor to prevent freezing the bot.
         response_object = await asyncio.to_thread(make_api_call)
 
-        # After a successful response, check if it was blocked for safety reasons.
         if response_object.prompt_feedback.block_reason:
             reason = response_object.prompt_feedback.block_reason.name
             print(f"Prompt was blocked by API. Reason: {reason}")
             return f"I'm sorry, I can't answer that. My safety filters were triggered (Reason: {reason})."
         
-        # If everything is fine, return the text.
         return response_object.text.strip()
 
     except Exception as e:
-        # This will catch timeouts, network errors, and other API issues.
         print(f"\n--- DETAILED GEMINI API ERROR ---\n{type(e).__name__}: {e}\n--- END OF ERROR ---\n")
         return "Sorry, I encountered an error trying to process your request. It might have been a network timeout or an issue with the API. Please try again in a moment."
-
-# --- END OF REPLACED SECTION ---
-
 
 # --- BOT EVENTS AND COMMANDS (No changes needed) ---
 @bot.event
@@ -137,7 +142,7 @@ async def reload(ctx):
 async def ask(ctx, *, question: str):
     async with ctx.typing():
         answer = await get_ai_response(question, KNOWLEDGE_BASE)
-        if not answer: # A fallback just in case the function returns empty
+        if not answer:
             answer = "Sorry, I received an empty response. Please try rephrasing your question."
 
         if len(answer) <= 2000:
