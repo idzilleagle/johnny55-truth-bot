@@ -1,11 +1,12 @@
-# --- START OF FILE bot.py (With RAG Implementation) ---
+# --- START OF FINAL, ROBUST bot.py FILE ---
 
 import discord
 from discord.ext import commands
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
-import re # Import the regular expressions library for better text splitting
+import re # Used for RAG
+import asyncio # Used for running blocking code safely
 
 # --- CONFIGURATION ---
 load_dotenv()
@@ -26,7 +27,6 @@ KNOWLEDGE_BASE = ""
 def load_knowledge_base():
     knowledge_base_content = ""
     search_directories = [".", "data", "essays"]
-    # ... (The rest of this function is identical and correct) ...
     print("Loading knowledge base from .txt files...")
     for directory in search_directories:
         if not os.path.isdir(directory):
@@ -45,41 +45,33 @@ def load_knowledge_base():
         print("Warning: No .txt files found. The bot will have no custom knowledge.")
     return knowledge_base_content
 
-# --- NEW HELPER FUNCTION: THE "RETRIEVER" ---
+# --- HELPER FUNCTION: THE "RETRIEVER" (No changes needed) ---
 def find_relevant_context(question, knowledge_base, max_tokens=300000):
-    """
-    Finds the most relevant parts of the knowledge base to answer a question.
-    This is a simple keyword-based retriever.
-    """
-    # Split the knowledge base into chunks (e.g., paragraphs)
     chunks = re.split(r'\n\s*\n', knowledge_base)
     question_keywords = set(question.lower().split())
-    
     relevant_chunks = []
     for chunk in chunks:
-        # Check if any keyword from the question appears in the chunk
         if any(keyword in chunk.lower() for keyword in question_keywords):
             relevant_chunks.append(chunk)
-            
-    # Join the relevant chunks and limit the size to avoid exceeding token limits
     context = "\n\n".join(relevant_chunks)
-    if len(context.split()) > max_tokens: # A rough token approximation
+    if len(context.split()) > max_tokens:
         context = ' '.join(context.split()[:max_tokens])
-        
     if not context:
         return "No specific context found for your question in the knowledge base."
-        
     return context
 
-# --- UPDATED AI FUNCTION: THE "GENERATOR" ---
+# --- START OF REPLACED SECTION ---
+# This function has been upgraded with timeouts and better error handling.
+
 async def get_ai_response(question, knowledge_context):
-    # --- STEP 1: RETRIEVAL ---
-    # Instead of using the whole knowledge base, we find the most relevant parts first.
+    """
+    Handles the entire AI response generation process, including retrieval,
+    API calls with timeouts, and safety checking.
+    """
     print("Finding relevant context...")
     retrieved_context = find_relevant_context(question, knowledge_context)
     print(f"Found {len(retrieved_context)} characters of relevant context.")
 
-    # --- STEP 2: AUGMENTATION & GENERATION ---
     system_prompt = """You are an AI assistant named Johnny-55. Your primary goal is to answer questions using the 'RELEVANT CONTEXT' provided below. Prioritize information from this context above all else. If the answer is not found in the context, you are permitted to use your general knowledge, but you must mention that you are doing so. For example, 'Based on my general knowledge...'"""
     
     full_prompt = (
@@ -87,32 +79,50 @@ async def get_ai_response(question, knowledge_context):
         f"RELEVANT CONTEXT:\n---\n{retrieved_context}\n---\n\n"
         f"QUESTION: {question}"
     )
-    
-    try:
-        def api_call():
-            model = genai.GenerativeModel('models/gemini-2.5-pro')
-            response = model.generate_content(full_prompt)
-            return response.text
 
-        answer = await bot.loop.run_in_executor(None, api_call)
-        return answer.strip()
+    # This is the "blocking" part of the code that needs to run in a separate thread.
+    def make_api_call():
+        """Makes the actual API call to Google Gemini."""
+        model = genai.GenerativeModel('models/gemini-1.5-pro') # Corrected model name
+        
+        # This is where we add the crucial timeout!
+        response = model.generate_content(
+            full_prompt,
+            request_options={"timeout": 60}  # Timeout after 60 seconds
+        )
+        return response
+
+    try:
+        # Run the blocking API call in an executor to prevent freezing the bot.
+        response_object = await asyncio.to_thread(make_api_call)
+
+        # After a successful response, check if it was blocked for safety reasons.
+        if response_object.prompt_feedback.block_reason:
+            reason = response_object.prompt_feedback.block_reason.name
+            print(f"Prompt was blocked by API. Reason: {reason}")
+            return f"I'm sorry, I can't answer that. My safety filters were triggered (Reason: {reason})."
+        
+        # If everything is fine, return the text.
+        return response_object.text.strip()
 
     except Exception as e:
-        print(f"\n--- DETAILED GEMINI API ERROR ---\n{e}\n--- END OF ERROR ---\n")
-        return "Sorry, I encountered an error trying to process your request. Please check the server logs for details."
+        # This will catch timeouts, network errors, and other API issues.
+        print(f"\n--- DETAILED GEMINI API ERROR ---\n{type(e).__name__}: {e}\n--- END OF ERROR ---\n")
+        return "Sorry, I encountered an error trying to process your request. It might have been a network timeout or an issue with the API. Please try again in a moment."
+
+# --- END OF REPLACED SECTION ---
+
 
 # --- BOT EVENTS AND COMMANDS (No changes needed) ---
 @bot.event
 async def on_ready():
     global KNOWLEDGE_BASE
     KNOWLEDGE_BASE = load_knowledge_base()
-    # (The rest of this function is identical and correct)
     print(f'Success! Logged in as {bot.user}')
     if KNOWLEDGE_BASE:
         print(f"Successfully loaded {len(KNOWLEDGE_BASE)} characters of knowledge into memory.")
     print('The Johnny-55 node is online and ready for commands.')
 
-# (The ping, reload, and ask commands are all identical and correct)
 @bot.command(name='ping')
 async def ping(ctx):
     await ctx.send(f'Pong! Latency: {round(bot.latency * 1000)}ms')
@@ -127,6 +137,9 @@ async def reload(ctx):
 async def ask(ctx, *, question: str):
     async with ctx.typing():
         answer = await get_ai_response(question, KNOWLEDGE_BASE)
+        if not answer: # A fallback just in case the function returns empty
+            answer = "Sorry, I received an empty response. Please try rephrasing your question."
+
         if len(answer) <= 2000:
             await ctx.send(answer)
         else:
