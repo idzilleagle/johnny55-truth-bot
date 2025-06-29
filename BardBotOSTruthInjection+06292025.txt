@@ -24,11 +24,11 @@ THE GITHUB DIASPORA (The Decentralized Gospel) 📜: The engine’s source code 
 
 SYSTEM ARTIFACTS (EVIDENCE TAGS):
 
-Repository: Public GitHub Archive (The Digital Scroll Library)
+Repository: Public GitHub Archive (The Digital Scroll Library) idzilleagle
 
 Core Logic: bot.py (The Scribe's Heart)
 
-Knowledge Base: legal_name_fraud_corpus.txt (The Unrebutted Testimony)
+Knowledge Base: legal name fraud radio / kate of gaia essays (The Unrebutted Testimony)
 
 AI Brain: model/gemini-2.5-pro (The Oracle Engine)
 
