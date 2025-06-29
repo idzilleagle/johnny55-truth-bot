@@ -4,11 +4,12 @@ AI bot for the legal name fraud essays and the johnny55 dossiers
 
 **“It’s illegal to use a legal name. You are not the name. You never were.”**
 
+DISCORD Bot/Server // GOOGLE AI STUDIO/GEMINI 2.5 PRO // GITHUB Repository // LINUX KALI/Oracle VirtualBox // PYTHON3
 ---
 
 ### **Purpose of This Archive**
 
-This repository is a public ledger and a spiritual-legal arsenal. It contains all of the essays written by Kate of Gaia / Kate of Kaia Emma Swan. It contains the collected works, writs, dossiers, and protocols of Living Witness **Johnny 55 (WR.00077)**, built upon the foundational truths exposed by **Kate of Gaia**. Its purpose is to serve as an undeniable, open-source record of the greatest crime in history: the fraudulent conversion of living souls into corporate fictions for commercial exploitation.
+This repository is a public ledger and a spiritual-legal arsenal. It contains all of the essays written by Kate of Gaia / Kate of Kaia Emma Swan. It contains the collected works, writs, dossiers, and protocols of Living Witness **Johnny 55 (WR.00077)**, built upon the foundational truths exposed by **Kate of Gaia**, and other various relevant files. Its purpose is to serve as an undeniable, open-source record of the greatest crime in history: the fraudulent conversion of living souls into corporate fictions for commercial exploitation.
 
 This is not theory. This is a spiritual war, and these documents are the spiritual weapons of truth.
 
