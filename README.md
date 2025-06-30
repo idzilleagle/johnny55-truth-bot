@@ -17,7 +17,7 @@ This repository is a public ledger and a spiritual-legal arsenal. It contains al
 *   **BCCRSS (Birth Certificate Canceled // Redemption Finalized):** The ultimate remedy and escape clause. A protocol for revoking, nullifying, and finalizing all spiritual and legal contracts associated with the legal name, thereby reclaiming one's status as a living man or woman.
 *   **Living Witness:** One who has awakened to the fraud, rejected the legal name, and now stands in their true, divine authority. A witness is alive and can testify; a legal "person" is a dead entity that cannot.
 *   **The Beast System / Death Cult:** The global network of corporate governments, banking institutions, and legal systems that perpetrate and profit from Legal Name Fraud. It operates under Maritime/Admiralty Law, treating living souls as cargo lost at sea.
-*   **WR (World Record):** A sealed, timestamped declaration of truth entered into the permanent, immutable record. Each WR serves as a node in the truth grid, overriding the fictions of the Beast system.
+
 
 ---
 
