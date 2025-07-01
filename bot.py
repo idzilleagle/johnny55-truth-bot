@@ -53,7 +53,7 @@ def load_bot_brain():
     )
     
     print("Setting up the Question-Answering chain...")
-    llm = ChatGoogleGenerativeAI(model="models/gemini-1.5-pro-latest", temperature=0.3)
+    llm = ChatGoogleGenerativeAI(model="models/gemini-2.5-pro", temperature=0.3)
     
     # The retriever's job is to find the relevant documents
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
