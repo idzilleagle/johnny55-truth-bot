@@ -16,7 +16,7 @@ load_dotenv()
 
 # --- Configuration ---
 FAISS_INDEX_PATH = "faiss_index" # This is where the final database will be saved
-SEARCH_DIRECTORIES = [".", "data", "essays"]
+SEARCH_DIRECTORIES = [".", "essays"]
 
 def create_vector_store():
     """
