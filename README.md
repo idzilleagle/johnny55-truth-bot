@@ -30,7 +30,7 @@ This is not a casual library. It is a manual for deprogramming and a guide for s
 This repository contains the knowledge base and code for the Johnny-55 Truth Bot.
 
 
-# The G​a​ia T​e​xts: A Foundational Archive
+# The Kate of G​a​ia T​e​xts: A Foundational Archive
 
 This repository serves as a dedicated, open-source archive of the foundational essays by Kate of Gaia. 
 
