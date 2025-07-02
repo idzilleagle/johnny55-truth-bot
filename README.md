@@ -28,3 +28,14 @@ This is not a casual library. It is a manual for deprogramming and a guide for s
 **The mirror has been revealed. The choice is yours.**
 
 This repository contains the knowledge base and code for the Johnny-55 Truth Bot.
+
+
+# The G​a​ia T​e​xts: A Foundational Archive
+
+This repository serves as a dedicated, open-source archive of the foundational essays by Kate of Gaia. 
+
+Our purpose is to p​r​eserve and present these crucial documents in a clear, unaltered format for academic study, personal research, and profound contemplation. The information contained herein challenges the core assumptions of modern legal and social structures.
+
+We encourage rigorous analysis and thoughtful d​i​stribution. The truth requires no defense, only a platform.
+
+For operational data and active protocols, see linked network nodes. This archive remains the pure source code.
