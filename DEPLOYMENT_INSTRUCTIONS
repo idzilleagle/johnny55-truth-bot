@@ -1,0 +1,83 @@
+Installation and Setup Guide for johnny55-truth-bot
+Welcome to the johnny55-truth-bot project! This guide provides detailed instructions to help you set up and run your own instance of this Discord bot. The bot uses Google's Gemini AI to read and understand the archived essays of Kate of Gaia, allowing it to answer questions based on the content of those texts.
+Prerequisites
+Before you begin, ensure you have the following installed on your system:
+Python 3.8 or newer
+pip for Python 3
+Step 1: Clone the Repository
+First, you need to download the project files from GitHub to your local machine. Open your terminal or command prompt and run the following commands:
+Generated bash
+# Clone the repository from GitHub
+git clone https://github.com/idzilleagle/johnny55-truth-bot.git
+
+# Navigate into the newly created project directory
+cd johnny55-truth-bot
+Use code with caution.
+Bash
+Step 2: Set Up the Discord Bot
+To run a Discord bot, you need to register it with Discord and get a secret token.
+Navigate to the Discord Developer Portal and log in.
+Click the New Application button in the top-right corner and give your application a name (e.g., "Truth Bot").
+Once created, navigate to the Bot tab on the left-hand menu.
+Crucial Step: Scroll down to the "Privileged Gateway Intents" section and enable the MESSAGE CONTENT INTENT toggle. The bot will not be able to read messages without this.
+Click the Reset Token button. Confirm the action, and Discord will display a secret token. Copy this token immediately and save it somewhere safe, like a temporary text file. This is your bot's password.
+Finally, you need to invite the bot to your server:
+Go to the OAuth2 tab, then click on URL Generator.
+In the SCOPES box, check the box for bot.
+A new BOT PERMISSIONS panel will appear below. Check the following essential permissions:
+Send Messages
+Read Message History
+Embed Links
+Attach Files
+Scroll down and copy the Generated URL.
+Paste this URL into your web browser and follow the prompts to add the bot to a Discord server you manage.
+Step 3: Get Your Google AI API Key
+This bot uses Google's Gemini Pro AI model. You can get a free API key for this.
+Go to the Google AI Studio.
+Log in with your Google account.
+Click the Get API key button (usually on the left or in the center of the page).
+Click Create API key in new project.
+A new API key will be generated for you. Copy this key and save it with your Discord bot token.
+Step 4: Configure Your Local Environment
+Now, you will securely store the secret keys you just acquired.
+In your terminal, make sure you are in the johnny55-truth-bot project directory.
+Create a new file named .env to store your secret keys. This file is specifically ignored by Git, so your keys will not be accidentally uploaded.
+Generated bash
+nano .env
+Use code with caution.
+Bash
+Copy and paste the following content into the file, replacing the placeholder text with your actual keys:
+Generated code
+# Secret API keys for the bot
+DISCORD_BOT_TOKEN="PASTE_YOUR_DISCORD_BOT_TOKEN_HERE"
+GEMINI_API_KEY="PASTE_YOUR_GOOGLE_AI_STUDIO_KEY_HERE"
+Use code with caution.
+Save the file and exit the editor (in nano, press Ctrl+X, then Y, then Enter).
+Step 5: Install Required Libraries
+The bot depends on several Python libraries to function. You can install all of them with a single command:
+Generated bash
+pip3 install discord.py python-dotenv google-generativeai faiss-cpu
+Use code with caution.
+Bash
+discord.py: The library for interacting with the Discord API.
+python-dotenv: Loads your secret keys from the .env file.
+google-generativeai: The library for interacting with the Gemini AI.
+faiss-cpu: A library from Facebook AI for creating an efficient, searchable knowledge base (a vector index) from the text documents.
+Step 6: The Two-Step Launch Process
+This bot requires a two-step process to run for the first time. You must first build its "memory" from the source texts before it can answer questions.
+Step 6a: Build the Knowledge Base
+This script reads all the .txt files in the essays directory and uses the AI to create a searchable FAISS vector index. This allows the bot to quickly find relevant information when asked a question.
+Run the following command and wait for it to complete:
+Generated bash
+python3 build_store.py
+Use code with caution.
+Bash
+You will see a new folder named faiss_index appear in your project directory. This is the bot's compiled knowledge base. You only need to run this script once, or again if you add new essays.
+Step 6b: Run the Bot
+With the knowledge base built, you can now launch the bot.
+Generated bash
+python3 bot.py
+Use code with caution.
+Bash
+(Note: If the main script has a different name, use that name instead, e.g., main.py.)
+If everything was configured correctly, your terminal will show a message indicating that the bot has logged in successfully. It is now online and ready to respond to messages in the server you invited it to.
