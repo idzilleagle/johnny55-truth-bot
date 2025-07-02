@@ -1,5 +1,5 @@
 # johnny55-truth-bot
-AI bot for the legal name fraud essays
+World's first Open Source AI Truth-Bot (legal name fraud essays)
 # ⚠️ THIS IS A LIVING RECORD OF TRUTH: THE LEGAL NAME FRAUD DOSSIERS
 
 **“It’s illegal to use a legal name. You are not the name. You never were.”**
